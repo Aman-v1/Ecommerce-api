@@ -1,16 +1,28 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
+import Brand from '../models/Brand.js';
 
 // @descr  Create new product
 // @route  Post /api/v1/products
 // @access Private/Admin
 
 export const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, category, brand, sizes, colors, user, price, totalQty } = req.body;
+  const { name, description, category, brand, sizes, colors, price, totalQty } = req.body;
   //If Product Exists
   const productExists = await Product.findOne({ name });
   if (productExists) {
     throw new Error('Product Already Exists');
+  }
+  // find the category
+  const categoryFound = await Category.findOne({ name: category });
+  if (!categoryFound) {
+    throw new Error('Category not found, please create category first or check category name');
+  }
+  // find the brand
+  const brandFound = await Brand.findOne({ name: brand.toLowerCase() });
+  if (!brandFound) {
+    throw new Error('Brand not found, please create brand first or check brand name');
   }
   // create the product
   const product = await Product.create({
@@ -25,6 +37,13 @@ export const createProduct = asyncHandler(async (req, res) => {
     totalQty,
   });
   //push the product into category
+  categoryFound.products.push(product._id);
+  // resave
+  await categoryFound.save();
+  //push the product into brand
+  brandFound.products.push(product._id);
+  // resave
+  await brandFound.save();
   // send response
   res.json({
     status: 'success',
@@ -117,7 +136,7 @@ export const getProducts = asyncHandler(async (req, res) => {
   }
 
   //await the query
-  const products = await productQuery;
+  const products = await productQuery.populate('reviews');
 
   res.json({
     status: 'success',
@@ -134,7 +153,7 @@ export const getProducts = asyncHandler(async (req, res) => {
 // @access Public
 
 export const getProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate('reviews');
   if (!product) {
     throw new Error('Product not found');
   }
