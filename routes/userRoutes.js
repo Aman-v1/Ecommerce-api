@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, getUserProfile } from '../controllers/usersController.js';
+import { registerUser, loginUser, getUserProfile, updateShippingAdd } from '../controllers/usersController.js';
 import { isLoggedIn } from '../middlewares/isLoggedIn.js';
 
 const userRoutes = express.Router();
@@ -7,5 +7,6 @@ const userRoutes = express.Router();
 userRoutes.post('/register', registerUser);
 userRoutes.post('/login', loginUser);
 userRoutes.get('/profile', isLoggedIn, getUserProfile);
+userRoutes.put('/update/shipping', isLoggedIn, updateShippingAdd);
 
 export default userRoutes;

@@ -60,11 +60,43 @@ export const loginUser = asyncHandler(async (req, res) => {
 // @access Private
 
 export const getUserProfile = asyncHandler(async (req, res) => {
-  const token = getTokenFromHeader(req);
-  //verify Token
-  const verified = verifyToken(token);
-  console.log(verified);
+  //find the user
+  const user = await User.findById(req.userAuthId).populate('orders');
   res.json({
-    msg: 'Welcome Profile page',
+    status: 'success',
+    message: 'User profile fetched successfully',
+    user,
+  });
+});
+
+// @descr  Update user shipping address
+// @route  PUT /api/v1/users/update/shipping
+// @access Private
+
+export const updateShippingAdd = asyncHandler(async (req, res) => {
+  const { firstName, lastName, address, city, postalCode, state, phone, country } = req.body;
+  const user = await User.findByIdAndUpdate(
+    req.userAuthId,
+    {
+      shippingAddress: {
+        firstName,
+        lastName,
+        address,
+        city,
+        postalCode,
+        state,
+        phone,
+        country,
+      },
+      hasShippingAddress: true,
+    },
+    {
+      new: true,
+    }
+  );
+  res.json({
+    status: 'success',
+    message: 'User shipping address updated successfully',
+    user,
   });
 });

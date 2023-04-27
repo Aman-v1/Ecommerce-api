@@ -9,6 +9,7 @@ import Brand from '../models/Brand.js';
 
 export const createProduct = asyncHandler(async (req, res) => {
   const { name, description, category, brand, sizes, colors, price, totalQty } = req.body;
+  const convertedImgs = req.files.map((file) => file?.path);
   //If Product Exists
   const productExists = await Product.findOne({ name });
   if (productExists) {
@@ -35,6 +36,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     user: req.userAuthId,
     price,
     totalQty,
+    images: convertedImgs,
   });
   //push the product into category
   categoryFound.products.push(product._id);

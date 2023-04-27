@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Category from '../models/Category.js';
 
-// @descr  Create new category
+// @desc   Create new category
 // @route  Post /api/v1/products/:id
 // @access Private/Admin
 export const createCategory = asyncHandler(async (req, res) => {
@@ -15,6 +15,7 @@ export const createCategory = asyncHandler(async (req, res) => {
   const category = await Category.create({
     name: name.toLowerCase(),
     user: req.userAuthId,
+    image: req.file.path,
   });
 
   res.json({

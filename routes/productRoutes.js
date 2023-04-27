@@ -7,13 +7,15 @@ import {
   updateProduct,
 } from '../controllers/productsController.js';
 import { isLoggedIn } from '../middlewares/isLoggedIn.js';
+import upload from '../config/fileUpload.js';
+import isAdmin from '../middlewares/isAdmin.js';
 
 const productRoutes = express.Router();
 
-productRoutes.post('/', isLoggedIn, createProduct);
+productRoutes.post('/', isLoggedIn, isAdmin, upload.array('files'), createProduct);
 productRoutes.get('/', getProducts);
 productRoutes.get('/:id', getProduct);
-productRoutes.put('/:id', isLoggedIn, updateProduct);
-productRoutes.delete('/:id/delete', isLoggedIn, deleteProduct);
+productRoutes.put('/:id', isLoggedIn, isAdmin, updateProduct);
+productRoutes.delete('/:id/delete', isLoggedIn, isAdmin, deleteProduct);
 
 export default productRoutes;

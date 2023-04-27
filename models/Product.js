@@ -39,7 +39,6 @@ const ProductSchema = new Schema(
     images: [
       {
         type: String,
-        default: 'https://via.placeholder.com/150',
       },
     ],
     reviews: [
@@ -70,6 +69,11 @@ const ProductSchema = new Schema(
 );
 
 //Virtuals
+//qty left
+ProductSchema.virtual('qtyLeft').get(function () {
+  const product = this;
+  return product.totalQty - product.totalSold;
+});
 //Total rating
 ProductSchema.virtual('totalReviews').get(function () {
   const product = this;
